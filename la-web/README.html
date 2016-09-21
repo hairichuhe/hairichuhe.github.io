@@ -1,0 +1,165 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>la-web:README</title>
+<meta name="keywords" content="王晓军,个人博客,王晓军的博客,海日初禾,上海海事王晓军,上海海事,上海络安" />
+<meta name="description" content="王晓军,个人博客,王晓军的博客,海日初禾,上海海事王晓军,上海海事,上海络安" />
+		<link href="toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="-">目录规范</h1>
+<pre><code class="lang-dir">fontEngin
+    build 项目生成的所放的文件夹   fis3 release -d build  //将项目编译生成到build文件夹     
+    node-modules        //插件列表
+    config              //后端服务规则
+        conf.json       //配置文件 
+    modules             //用require加载的模块插件目录  
+    src     
+        components      //自定义vue组件目录
+        directives      //自定义vue指令目录
+        filters         //自定义vue过滤器目录
+        pages           //页面目录
+    static              //静态资源目录
+        img             //公共图片
+        js              //公共js
+        css             //公共样式
+        fonts           //公共字体
+        libs            //根据名称进行分类，用到哪些，就添加哪些文件夹、
+    test                //测试数据目录
+    fis-conf.js         //fis3配置文件
+    package.json        //node插件包配置
+    manifest.json       //项目资源依赖表
+    README.md           //项目说明
+</code></pre>
+<h1 id="fis3-vue-mod-">fis3-vue-mod项目脚手架</h1>
+<p>项目简介：
+基于<a href="http://nodejs.cn/">node</a>、<a href="http://fis.baidu.com/fis3/docs/beginning/intro.html">fis3</a>、<a href="http://cn.vuejs.org/guide/installation.html">vue</a></p>
+<p>基本软件安装：
+1.<a href="http://nodejs.cn/">node</a>一直点击下一步下一步就好，安装好以后win+R输入cmd打开命令提示符输入node-v 看node是否 安装成功  测试完成然后输入npm-v，看npm有没有安装成功，一般情况下npm集成在node里面，node安装成功npm也就安装成功了。
+2.通过npm安装fis3  在命令行输入npm install -g fis3  或者npm install fis3
+加-g表示安装在全局，不加-g只是安装在当前文件夹下，下面默认你已经安装了fis3,参考 <a href="http://fis.baidu.com/fis3/docs/beginning/install.html">fis3安装</a></p>
+<p>3.安装fis3 常用的插件，安装命令  npm install -g（决定是否全局安装）xxx（插件名）
+本项目用到的插件有：fis3-postpackager-loader
+                    fis3-hook-commonjs</p>
+<h2 id="start">start</h2>
+<ol>
+<li><p>克隆项目到本地，进入项
+目根目录的resore文件下：</p>
+</li>
+<li><p>开启<a href="http://fis.baidu.com/fis3/docs/beginning/debug.html">fis3前端调试服务器</a>：</p>
+</li>
+</ol>
+<pre><code class="lang-bash">fis3 server start
+</code></pre>
+<ol>
+<li><a href="http://fis.baidu.com/fis3/docs/beginning/debug.html">项目部署预览</a>：  </li>
+</ol>
+<pre><code class="lang-bash">fis3 release build  -d build//发布模式    将项目发布到build文件夹，可以直接放在服务器
+
+fis3 release   //测试模式
+</code></pre>
+<h2 id="-fis-">使用到的fis第三方插件介绍说明：</h2>
+<ul>
+<li><a href="https://github.com/fex-team/fis3-hook-commonjs">fis3-hook-commonjs</a> 前端模块化插件</li>
+<li><a href="https://github.com/fex-team/fis3-postpackager-loader">fis3-postpackager-loader</a> 前端静态资源加载器。
+  用来分析页面中使用的和依赖的资源（js或css），并将这些资源做一定的优化后插入页面。</li>
+</ul>
+<h2 id="-vue-">使用到的vue插件：</h2>
+<ul>
+<li><a href="http://vuejs.github.io/vue-router/zh-cn/index.html">vue-router</a> Vue.js 官方路由。</li>
+</ul>
+<p>##项目启动步骤：
+1.下载并安装node  下载地址：<a href="https://nodejs.org/en/建议选择长期维护版本">https://nodejs.org/en/建议选择长期维护版本</a>
+2.安装fis3  在命令行中输入命令：npm install -g fis3  安装完成输入fis3 -v，查看是否安装成功
+3.打开fis服务器。命令：fis3 server start
+4.进入到项目文件夹的la-web文件夹下,并执行命令：fis3 release -wL
+5.打开127.0.0.1:8080即可看到生成后的项目。</p>
+<p>##注意事项
+/<strong><strong><strong><strong>*</strong></strong></strong></strong>需要模块化的内容<strong><strong><strong><em>**</em></strong></strong></strong>/
+1.每个自己定义组件的js文件，因为需要引入，所以必须模块化。
+2.vue-router  vue路由插件
+3.vue-validator vue表单验证插件
+4.vue 原始插件
+5.要通过require引入的js文件</p>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
