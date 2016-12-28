@@ -1,0 +1,336 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>test-driven</title>
+		<link href="toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="nodejs-">Nodejs的测试和测试驱动开发</h1>
+<p>测试是保证软件质量必不可少的一环。测试有很多形式：手动、自动、单元测试等等。这里我们只聊使用Mocha这个框架在Nodejs中实现单元测试。单元测试是测试等重要组成，这样的测试只对于一个方法，这样的一小段代码，实施有针对的测试。</p>
+<p>这里会逐步深入的讲解单元测试。首先是最简单的单元测试，没有外部依赖，只有简单的输入。接着是实用Sino框架实现stub等有依赖的测试。最后讲解如何单元测试异步代码。</p>
+<p><strong> <a href="http://www.jianshu.com/p/abf6551d72b3">参考链接</a> </strong></p>
+<h2 id="-mocha-chai">安装Mocha 和Chai</h2>
+<p>安装Mocha：</p>
+<pre><code>npm install mocha －g
+</code></pre><p>Mocha和其他的javascript单元测试框架，如：jasmine和QUnit不同，他没有assertion库。但是，Mocha允许你实用你自己的。最流行的Assertion库有should.js、expect.js和Chai，当然Nodejs内置的也可以使用。这里我们用Chai。</p>
+<p>首先创建一个package.json并安装Chai：</p>
+<pre><code>npm install chai --save-dev
+</code></pre><p>Chai包含三种assertion方式：should方式、expect方式和assert方式。个人喜欢expect式的，所以下面就使用这个方式了。</p>
+<h2 id="-test">第一个Test</h2>
+<p><a href="https://github.com/hairichuhe/test-driven">项目代码</a></p>
+<p>第一个例子，我们用测试驱动开发（TDD）的方式创建一个CartSummary的构造函数，这个函数会用来计算购物车的商品总数。测试驱动开发就是在实现功能之前先写单元测试，这样来驱动你设计可以与测试相适应的代码。</p>
+<p>测试驱动开发的步骤：</p>
+<pre><code>写一个测试，并且这个测试会失败。
+写最少的代码来使整个测试可以通过。
+重复。
+</code></pre><p>来看代码：</p>
+<pre><code>// tests/part1/cart-summary-test.js
+var chai=require(&#39;chai&#39;);
+var expect=chai.expect;
+var CartSummary=require(&quot;./../../src/part1/cart-summary&quot;);
+
+describe(&#39;cartSummary&#39;,function(){
+    it(&#39;如果传空数组进去， getSubtotal方法 将会返回0&#39;,function(){
+        var cartSummary=new CartSummary([]);
+        expect(cartSummary.getSubtotal()).to.equal(0);
+    })
+})
+</code></pre><p>describe方法是用来创建一组测试的，并且可以给这一组测试一个描述。一个测试就用一个it方法。it方法的第一个参数是一个描述。第二个参数是一个包含一个或者多个assertion的方法。</p>
+<p>运行测试只需要在项目的根目录运行命令行：mocha tests －－recursive －－watch。recursive指明会找到根目录下的子目录的测试代码并运行。watch则表示Mocha会监视源代码和测试代码的更改，每次更改之后重新测试。
+<img src="img/1.png" alt=""></p>
+<p>我们测试不过，因为还没有完成功能代码。添加代码：</p>
+<pre><code>// src/part1/cart-summary.js
+
+function CartSummary () {};
+
+CartSummary.prototype.getSubtotal = function(){
+    return 0;
+};
+
+module.exports=CartSummary;
+function CartSummary () {};
+
+CartSummary.prototype.getSubtotal = function(){
+    return 0;
+};
+
+module.exports=CartSummary;
+</code></pre><p><img src="img/2.png" alt=""></p>
+<p>下一个测试：</p>
+<pre><code>it(&#39;这个测试返回所有商品的总价值&#39;,function(){
+    var cartSummary=new CartSummary([{
+        id: 1,
+        quantity: 4,
+        price: 50
+      }, {
+        id: 2,
+        quantity: 2,
+        price: 30
+      }, {
+        id: 3,
+        quantity: 1,
+        price: 40
+      }]);
+    expect(cartSummary.getSubtotal()).to.equal(300);
+});
+</code></pre><p>这个测试时失败的。。。
+<img src="img/3.png" alt="">
+下面就来修改代码，让测试通过：</p>
+<pre><code>// tests/part1/cart-summary-test.js
+var chai=require(&#39;chai&#39;);
+var expect=chai.expect;
+var CartSummary=require(&quot;./../../src/part1/cart-summary&quot;);
+
+describe(&#39;cartSummary&#39;,function(){
+    it(&#39;如果传空数组进去， getSubtotal方法 将会返回0&#39;,function(){
+        var cartSummary=new CartSummary([]);
+        expect(cartSummary.getSubtotal()).to.equal(0);
+    });
+    it(&#39;这个测试返回所有商品的总价值&#39;,function(){
+        var cartSummary=new CartSummary([{
+            id: 1,
+            quantity: 4,
+            price: 50
+          }, {
+            id: 2,
+            quantity: 2,
+            price: 30
+          }, {
+            id: 3,
+            quantity: 1,
+            price: 40
+          }]);
+        expect(cartSummary.getSubtotal()).to.equal(300);
+    });
+});
+</code></pre><p><img src="img/4.png" alt=""></p>
+<h2 id="stub-sinon">Stub和Sinon</h2>
+<p>假设我们现在需要给CartSummary添加getTax方法。最终的使用看起来是这样的：</p>
+<pre><code>var cartSummary = new CartSummary([ /* ... */ ]);
+cartSummary.getTax(&#39;NY&#39;, function() {
+  // executed when the tax API request has finished
+});
+</code></pre><p>getTax方法会使用量外的一个tax模块，包含一个calculate的方法。虽然我们还没有实现tax模块，但是我们还是可以完成getTax的测试。该怎么做呢？
+首先安装sinon：</p>
+<pre><code>npm install －－save－dev sinon
+</code></pre><p>安装Sinon之后，我们就可以给出tax.calculate的定义了：</p>
+<pre><code>// src/part1/tax.js
+module.exports = {
+    calculate:function(subtotal,state.callback){
+        //这里完成税费计算
+    }
+};
+</code></pre><p>创建完成tax.calculate之后就可以使用Sinon的魔法了。用Sinon给出一个tax.calculate的零时实现。这个零时的实现就是Stub（也叫做桩）。代码：</p>
+<pre><code>describe(&#39;税费计算测试&#39;,function(){
+    beforeEach(function(){
+        sinon.stub(tax,&#39;calculate&#39;,function(subtotal,state,callback){
+            setTimeout(function(){
+                callback({
+                    amount:30
+                });
+            },0);
+        });
+    });
+
+    afterEach(function(){
+        tax.calculate.restore();
+    });
+
+    it(&#39;getTax()将会执行tax amount的回调方法&#39;,function(done){
+        var cartSummary = new CartSummary([{
+            id: 1,
+      quantity: 4,
+      price: 50
+    }, {
+      id: 2,
+      quantity: 2,
+      price: 30
+    }, {
+      id: 3,
+      quantity: 1,
+      price: 40
+        }])
+    });
+
+    cartSummary.getTax(&#39;NY&#39;,function(taxAmount){
+        expect(taxAmount).to.equal(30);
+        done();
+    })
+})
+</code></pre><p>上面已经使用Sinon创建stub方法了。这里再细讲一下。使用sinon.stub方法创建Stub：</p>
+<pre><code>var stub = sinon.stub(object,&#39;method&#39;,func);
+</code></pre><p>给object添加一个名称为method（第二个参数）的方法，方法体的实现在第三个参数中给出。</p>
+<p>上例中使用的方法体：</p>
+<pre><code>function(subtotal, state, callback) {
+  setTimeout(function() {
+    callback({
+      amount: 30
+    });
+  }, 0);
+}
+</code></pre><p>setTimeout方法是用来模拟真实环境的，在实际使用的时候肯定会有一个异步的网络请求来请求tax服务。方法体的替换在beforeEach里，这些代码会在测试开始之前执行。在所有测试完成之后调用afterEach，并把tax.calculate恢复到原来的模样。</p>
+<p>上面的例子也展示了如何测试异步代码。在it方法中指明一个参数（上例使用的是done）。Mocha会传入一个方法，并等待异步代码返回再结束测试。当然，这个等待是由超时时间的，一般是2000毫秒。如果异步代码的测试，没有按照上面的方法写的话，那么所有的测试都会通过。</p>
+<h2 id="sinon-">Sinon的&quot;间谍&quot;</h2>
+<p>Sinon的间谍（spy）是用来完成另外一种替身测试的（test double），它可以用来记录方法调用。包括方法的调用次数、调用的时候的参数是什么样的以及是否抛出异常。下面就是更新后的测试：</p>
+<pre><code>describe(&#39;cartSummary&#39;,function(){
+    beforeEach(function(){
+        sinon.stub(tax,&#39;calculate&#39;,function(subtotal,state,callback){
+            setTimeout(function(){
+                callback({
+                    amount:30
+                });
+            },0);
+        });
+    });
+
+    afterEach(function(){
+        tax.calculate.restore();
+    });
+
+
+    it(&#39;如果传空数组进去， getSubtotal方法 将会返回0&#39;,function(){
+        var cartSummary=new CartSummary([]);
+        expect(cartSummary.getSubtotal()).to.equal(0);
+    });
+    it(&#39;这个测试返回所有商品的总价值&#39;,function(){
+        var cartSummary=new CartSummary([{
+            id: 1,
+            quantity: 4,
+            price: 50
+          }, {
+            id: 2,
+            quantity: 2,
+            price: 30
+          }, {
+            id: 3,
+            quantity: 1,
+            price: 40
+          }]);
+        expect(cartSummary.getSubtotal()).to.equal(300);
+    });
+
+    it(&#39;getTax()将会执行tax amount的回调方法&#39;,function(done){
+        var cartSummary = new CartSummary([{
+            id: 1,
+              quantity: 4,
+              price: 50
+        }, {
+              id: 2,
+              quantity: 2,
+              price: 30
+        }, {
+              id: 3,
+              quantity: 1,
+              price: 40
+        }]);
+        cartSummary.getTax(&#39;NY&#39;,function(taxAmount){
+            expect(taxAmount).to.equal(30);
+            expect(tax.calculate.getCall(0).args[0]).to.equal(300);
+            expect(tax.calculate.getCall(0).args[1]).to.equal(&#39;NY&#39;);
+            done();
+        });
+    });
+});
+</code></pre><p>在测试中添加了两个expect。getCall用来获取tax.calculate的第一次调用的第一个参数值，第二个getCall用来获取tax.calculate的第一次调用的第二个参数。主要可以用来检测被测试方法的参数是否正确。</p>
+<h2 id="-">总结</h2>
+<p>在本文中探讨了如何在Node中使用Mocha以及Chai和Sinon实现单元测试。希望各位喜欢。</p>
+<h2 id="-">附件（测试案例启用流程）</h2>
+<p><strong>电脑必须装有node环境</strong></p>
+<p>1.浏览器打开<a href="https://github.com/hairichuhe/test-driven">https://github.com/hairichuhe/test-driven</a></p>
+<p>2.已压缩包的形式将代码下载到本地并解压出来
+<img src="img/5.png" alt="">
+<img src="img/6.png" alt=""></p>
+<p>3.进入到项目目录下的node-testing文件夹中，并在当前文件夹中打开命令行
+<img src="img/7.png" alt="">
+<img src="img/8.png" alt=""></p>
+<p>4.在当前命令行中安装mocha</p>
+<pre><code>npm install mocha -g
+</code></pre><p><img src="img/9.png" alt="">
+5.在当前命令行中执行npm install 命令
+<img src="img/10.png" alt=""></p>
+<p>6.执行单元测试命令</p>
+<pre><code>mocha tests --recursive --watch
+</code></pre><p><img src="img/11.png" alt=""></p>
+<p><strong>至此就会看到三个单元测试全部通过</strong></p>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
