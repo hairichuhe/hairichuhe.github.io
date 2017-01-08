@@ -1,0 +1,151 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>晓军出品:mysqlinstall</title>
+		<link href="toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="mysql-">mysql 安装教程</h1>
+<p>本教程讲解最简单的mysql安装教程。</p>
+<h2 id="-">下载压缩包</h2>
+<p><a href="https://dev.mysql.com/downloads/mysql/">压缩包下载地址</a></p>
+<p><strong> 注意：根据自己电脑的位数选择下载32位或者64位 </strong>
+<img src="img/1.png" alt=""></p>
+<h2 id="-">解压到相应文件夹中</h2>
+<p>本人是解压到F:\javatools文件夹下，并将文件夹名字改为了mysql。</p>
+<p><img src="img/2.png" alt=""></p>
+<h2 id="-">配置环境变量</h2>
+<p>配置环境变量，在path中放入：F:\javatools\mysql\bin;
+<img src="img/3.png" alt=""></p>
+<h2 id="-">增加配置文件</h2>
+<p>复制一份my-default.ini文件出来并重命名为my.ini
+<img src="img/4.png" alt="">
+具体配置为如下：</p>
+<pre><code>    [mysql]
+    # 设置mysql客户端默认字符集
+    default-character-set=utf8 
+    [mysqld]
+    #设置3306端口
+    port = 3306 
+    # 设置mysql的安装目录
+    basedir=F:\javatools\mysql
+    # 设置mysql数据库的数据的存放目录
+    datadir=F:\javatools\mysql\data
+    # 允许最大连接数
+    max_connections=200
+    # 服务端使用的字符集默认为8比特编码的latin1字符集
+    character-set-server=utf8
+    # 创建新表时将使用的默认存储引擎
+    default-storage-engine=INNODB 
+    # 定义了mysql应该支持的sql语法，数据校验等
+    sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+</code></pre><p><img src="img/5.png" alt="">
+<strong> 注意：将相关的路径设置为何自己电脑匹配的路径 </strong></p>
+<h2 id="-">进入命令窗口（注意：以管理员身份进入）</h2>
+<h3 id="-mysql-bin-">进入到mysql的bin目录</h3>
+<pre><code>cd F:\javatools\mysql\bin
+</code></pre><h3 id="-">初始化数据库</h3>
+<pre><code>命令：mysqld --initialize   #直接初始化mysql，生成data文件夹中的文件。
+</code></pre><h3 id="-">安装数据库</h3>
+<pre><code>命令：mysqld -install          #安装mysql
+</code></pre><h3 id="-">启动数据库服务</h3>
+<pre><code>命令：net start mysql          #启动服务器
+</code></pre><h2 id="-">登录</h2>
+<p>第一次登录不用输入密码，一路回车往下，就会进入mysql</p>
+<pre><code>mysql -u root -p
+</code></pre><h2 id="-">退出</h2>
+<p>在mysql中输入quit，然后回车</p>
+<pre><code>mysql&gt;quit
+</code></pre><p><img src="img/6.png" alt=""></p>
+<h2 id="mysql-">mysql图形化界面安装</h2>
+<p>本次我们安装的图形化界面为Navicat Premium</p>
+<h2 id="-navicat-premium">下载Navicat Premium</h2>
+<p><a href="http://pan.baidu.com/s/1hsHT4Ug">Navicat Premium下载地址</a>
+提取码： ygra
+接下来和其他游戏安装一抹一样，一直下一步。</p>
+<h2 id="-navicat-premium-">用Navicat Premium链接数据库</h2>
+<p><img src="img/7.png" alt="">
+<img src="img/8.png" alt="">
+链接测试成功后，既可连入数据库。</p>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
