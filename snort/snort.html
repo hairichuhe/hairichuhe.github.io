@@ -1,0 +1,300 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>晓军出品:snort</title>
+		<link href="toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="snort-">snort入侵检测系统安装手册</h1>
+<p>linux 系统snort安装指南  </p>
+<p><strong> <a href="http://blog.csdn.net/cnbird2008/article/details/8730017">参考链接</a> </strong></p>
+<h2 id="-">准备工作</h2>
+<p>安装CentOS-6.6-x86_64-minimal.iso，给系统设置IP和dns让系统可以联网.</p>
+<h3 id="-wget">安装wget</h3>
+<pre><code> #yum install wget –y
+</code></pre><h3 id="-">更换源</h3>
+<p>更换成阿里云源，更新系统、下载软件速度快</p>
+<pre><code> #mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+
+ #wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+
+ #yum clean all
+
+ #yum makecache
+</code></pre><h3 id="-">更新系统</h3>
+<pre><code> #yum -y update
+</code></pre><h3 id="-epel-">安装epel源</h3>
+<pre><code> #yum install -y epel-release
+</code></pre><h3 id="-">下载安装文件</h3>
+<p>把安装包里的安装文件下载到CentOS里备用，这里放到/root</p>
+<h2 id="-lmap">安装配置LMAP</h2>
+<h3 id="-lmap-">安装LMAP组件</h3>
+<pre><code> #yum install -y httpd mysql-server php php-mysql php-mbstring php-mcrypt mysql-devel php-gd
+</code></pre><h3 id="-php-">安装php插件</h3>
+<pre><code> #yum install -y mcrypt libmcrypt libmcrypt-devel
+</code></pre><h3 id="-pear-">安装pear插件</h3>
+<pre><code> #yum install -y php-pear
+ #pear upgrade pear
+ #pear channel-update pear.php.net
+ #pear install mail    
+ #pear install Image_Graph-alpha Image_Canvas-alpha Image_Color Numbers_Roman
+ #pear install  mail_mime
+</code></pre><h3 id="-adodb">安装adodb</h3>
+<pre><code> #tar zxvf adodb519.tar.gz -C /var/www/html
+ #mv /var/www/html/adodb5 /var/www/html/adodb
+</code></pre><h3 id="-base">安装base</h3>
+<pre><code> #tar zxvf base-1.4.5.tar.gz -C /var/www/html
+ #mv /var/www/html/base-1.4.5 /var/www/html/base
+</code></pre><h3 id="-php-ini">修改php.ini</h3>
+<pre><code> #vi /etc/php.ini
+         error_reporting = E_ALL &amp; ~E_NOTICE
+</code></pre><h3 id="-html-">设置html目录权限</h3>
+<pre><code> #chown -R apache:apache /var/www/html
+</code></pre><h3 id="-adodb-">设置adodb权限</h3>
+<pre><code> #chmod 755 /var/www/html/adodb
+</code></pre><h3 id="-mysql">配置mysql</h3>
+<p>解压barnyard2（这里要用里面的文件创mysql表）</p>
+<pre><code> #tar zxvf barnyard2-1.9.tar.gz
+</code></pre><p>启动mysql</p>
+<pre><code> #service mysqld start
+</code></pre><p>设置root密码为123456</p>
+<pre><code> #mysqladmin -u root -p password 123456
+</code></pre><p>以root登陆mysql</p>
+<pre><code> #mysql -u root -p
+</code></pre><p>创建名为snort的数据库</p>
+<pre><code> &gt;create database snort;
+</code></pre><p>创建名为snort、密码为123456的数据库用户并赋予名为snort数据库权限  </p>
+<pre><code> &gt;grant create,select,update,insert,delete on snort.* to snort@localhost identified by &#39;123456&#39;;
+</code></pre><p>退出</p>
+<pre><code> &gt;exit
+</code></pre><p>创建数据库表  </p>
+<pre><code> #mysql -u snort -p -Dsnort &lt; /root/barnyard2-1.9/schemas/create_mysql
+</code></pre><h3 id="-base">配置base</h3>
+<pre><code> #service mysqld start                启动mysql
+ #service httpd start                            启动apache
+ #service iptables stop               关闭防火墙
+</code></pre><p>用浏览器打开<a href="http://172.16.100.131/base/setup/index.php（IP换成你自己的）">http://172.16.100.131/base/setup/index.php（IP换成你自己的）</a></p>
+<h4 id="-continuue">点击Continuue</h4>
+<p><img src="img/1.png" alt=""></p>
+<h4 id="-adodb-">选择显示语言，设置adodb路径</h4>
+<p><img src="img/2.png" alt=""></p>
+<h4 id="-">配置数据库</h4>
+<p><img src="img/3.png" alt=""><br>在这一步可能会有报错，服务器连不上<br>解决办法：<br>create user &#39;root&#39;@&#39;192.168.0.235&#39; identified by &#39;你的密码&#39;;<br>grant all privileges on <em>.</em> to root@&#39;localhost&#39;;   </p>
+<h4 id="-admin-admin-mysql-root-">设置admin用户和密码（这里应该是设置admin的用户和密码，我这里跟mysql的root一样）</h4>
+<p><img src="img/4.png" alt=""></p>
+<h4 id="-createe-base-ag-">点击“Createe BASE AG”</h4>
+<p><img src="img/5.png" alt=""></p>
+<h4 id="-successfilly-created-centos7-step-5-">成功的话会有红色successfilly created字样，如下图（Centos7没有，原因未知），点击“step 5”</h4>
+<p><img src="img/6.png" alt=""></p>
+<h4 id="-">安装成功</h4>
+<p><img src="img/7.png" alt=""></p>
+<h2 id="-snort-barnyard2">安装配置snort+barnyard2</h2>
+<h3 id="-">安装依赖包</h3>
+<pre><code> #yum install gcc flex bison zlib libpcap tcpdump gcc-c++ pcre* zlib* libdnet libdnet-devel
+</code></pre><h3 id="-libdnet">安装libdnet</h3>
+<p>（这里必须是这个版本）</p>
+<pre><code> #tar zxvf libdnet-1.12.tgz
+ #cd libdnet-1.12
+ #./configure &amp;&amp; make &amp;&amp; make install
+</code></pre><h3 id="-libpcap">安装libpcap</h3>
+<p>（这里必须）</p>
+<pre><code> #wget http://www.tcpdump.org/release/libpcap-1.0.0.tar.gz
+ #tar zxvf libpcap-1.0.0.tar.gz
+ #cd libpcap-1.0.0
+ #./configure &amp;&amp; make &amp;&amp; make install
+</code></pre><h3 id="-daq">安装DAQ</h3>
+<pre><code> #tar zxvf daq-2.0.4.tar.gz
+ #cd daq-2.0.4
+ #./configure &amp;&amp; make &amp;&amp; make install
+</code></pre><h3 id="-snort">安装snort</h3>
+<pre><code> #tar zxvf snort-2.9.7.0.tar.gz
+ #cd snort-2.9.7.0
+ #./configure &amp;&amp; make &amp;&amp; make install
+</code></pre><h3 id="-snort">配置snort</h3>
+<p>创建需要的文件和目录</p>
+<pre><code> #mkdir /etc/snort
+ #mkdir /var/log/snort
+ #mkdir /usr/local/lib/snort_dynamicrules
+ #mkdir /etc/snort/rules
+ #touch /etc/snort/rules/white_list.rules /etc/snort/rules/black_list.rules
+ #cp /root/snort-2.9.7.0/etc/gen-msg.map threshold.conf classification.config reference.config unicode.map snort.conf /etc/snort/
+</code></pre><p>编辑配置文件</p>
+<pre><code>#vi /etc/snort/snort.conf
+</code></pre><p>定义路径变量</p>
+<pre><code> var RULE_PATH /etc/snort/rules
+ var SO_RULE_PATH /etc/snort/so_rules
+ var PREPROC_RULE_PATH /etc/snort/preproc_rules
+ var WHITE_LIST_PATH /etc/snort/rules
+ var BLACK_LIST_PATH /etc/snort/rules
+</code></pre><p>设置log目录</p>
+<pre><code>config logdir：/var/log/snort
+</code></pre><p>配置输出插件</p>
+<pre><code>output unified2:filename snort.log,limit 128
+</code></pre><h3 id="-">配置规则</h3>
+<pre><code> #tar zxvf snortrules-snapshot-2970.tar.gz -C /etc/snort/
+ #cp /etc/snort/etc/sid-msg.map /etc/snort/
+</code></pre><h3 id="-snort">测试snort</h3>
+<pre><code> #snort -T -i eth0 -c /etc/snort/snort.conf
+</code></pre><p>参数解释：
+-T      指定启动模式：测试<br>-i       指定网络接口<br>-c      指定配置文件<br>如果出现“success”的字样说明配置好了<br>按ctrl+c终止测试  </p>
+<h3 id="-barnyard2">安装barnyard2</h3>
+<pre><code> #cd /root/barnyard2-1.9
+ #./configure --with-mysql --with-mysql-libraries=/usr/lib64/mysql/
+ #make &amp;&amp; make install
+</code></pre><h3 id="-barnyard2">配置barnyard2</h3>
+<p>创建需要的文件和目录   </p>
+<pre><code> #mkdir /var/log/barnyard2
+ #touch /var/log/snort/barnyard2.waldo
+ #cp /root/barnyard2-1.9/etc/barnyard2.conf /etc/snort
+</code></pre><p>修改配置文件   </p>
+<pre><code> #vi /etc/snort/barnyard2.conf  
+ config logdir:/var/log/barnyard2
+ config hostname:localhost
+ config interface:eth0
+ config waldo_file:/var/log/snort/barnyard.waldo
+ output database: log, mysql, user=snort password=123456 dbname=snort host=localhost
+</code></pre><h3 id="-barnyard2">测试barnyard2</h3>
+<pre><code> #barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.log -w /var/log/snort/barnyard2.waldo
+</code></pre><p>参数解释：<br>-c      指定配置文件<br>-d      指定log目录<br>-f       指定log文件<br>-w     指定waldo文件<br>  Ps：执行这一步可能会有报错<br><img src="img/8.png" alt=""><br>解决办法：  </p>
+<pre><code>create user &#39;root&#39;@&#39;192.168.0.235&#39; identified by &#39;你的密码&#39;;
+grant all privileges on *.* to root@&#39;localhost&#39;;
+</code></pre><p>如果出现“Waiting for new spool file”字样则表示barnyard2配置成功<br>按ctrl+c终止测试   </p>
+<h2 id="-ids-">测试IDS是否正常工作</h2>
+<h3 id="-">添加测试规则</h3>
+<pre><code> #vi /etc/snort/rules/local.rules
+</code></pre><p>添加一条检查ping包的规则</p>
+<pre><code> alert icmp any any -&gt; any any (msg: &quot;IcmP Packet detected&quot;;sid:1000001;)
+</code></pre><p>规则注解：  </p>
+<ul>
+<li>alert　　　　　　触发规则后做出的动作  </li>
+<li>icmp　　　　　　协议类型  </li>
+<li>第一个any　　　　源IP（网段），any表示任意  </li>
+<li>第二个any　　　　源端口，any表示任意  </li>
+<li>-&gt;　　　　　　　　表示方向  </li>
+<li>第三个any　　　　目标IP（网段），any表示任意  </li>
+<li>第四个any　　　　目标端口，any表示任意  </li>
+<li>Msg字符　　　　告警名称  </li>
+<li>Sid　　　　　　id号，个人编写的规则使用1,000,000以上</li>
+</ul>
+<h3 id="-ids-">配置IDS启动脚本</h3>
+<p>配置启动脚本</p>
+<pre><code> #cp idsctl /sbin
+ #chmod 755 /sbin/idsctl
+</code></pre><h3 id="-ids">启动IDS</h3>
+<pre><code> #service mysqld start                启动mysql
+ #service httpd start                  启动apache
+ #service iptables stop               关闭防火墙
+</code></pre><p>使用脚本启动ids</p>
+<pre><code> #idsctl start
+</code></pre><p>手动运行ids（2条命令先后运行，脚本启动失效可选）</p>
+<pre><code> #barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.log -w /var/log/snort/barnyard2.waldo -D
+ #snort -c /etc/snort/snort.conf -i eth0 -D
+</code></pre><p>（-D选项用来让命令转入后台运行，其他选项意义上文已有解释）  </p>
+<h3 id="-ids">测试IDS</h3>
+<p>向IDS的IP发送ping包，base的页面会出现ICMP告警<br><img src="img/10.png" alt="">    </p>
+<h3 id="-ids">停止IDS</h3>
+<p>使用脚本停止IDS  </p>
+<pre><code> #idsctl stop
+</code></pre><p>手动停止IDS  </p>
+<pre><code> killall -9 snort barnyard2
+</code></pre><h2 id="-snort-">安装snort可能碰到的报错及解决办法</h2>
+<h3 id="error-libpcap-libpcap-headers-libpcap-a-or-so-pcap-h-not-found-">Error ： libpcap libpcap/headers (libpcap.a (or .so)/pcap.h)not found。</h3>
+<pre><code>解决办法 ：yum install libpacp-devel
+</code></pre><h3 id="error-libpcre-header-not-found-">Error ： Libpcre header not found.</h3>
+<pre><code>解决办法 ： yum install pcre-devel
+</code></pre><h3 id="error-dnet-header-not-found">Error ： dnet header not found</h3>
+<pre><code> 解决办法 ： wget [url]http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz?download[/url]
+ tar xvf libdnet-1.12.tgz
+ cd libdnet-1.12
+ ./configure &amp;&amp; make &amp;&amp; make install
+</code></pre><h3 id="error-daq_static-library-not-found">Error ： daq_static library not found</h3>
+<pre><code> 解决办法 ：（1）下载 daq2.0 包 （2） tar zxvf daq2.0 (3) ./configure (4) make &amp;&amp; make install
+    daq运行./configure时报错：
+ 1. ERROR! Libpcap library version &gt;= &quot;1.0.0&quot; not found.
+ 2.Get it from http://www.tcpdump.org&quot;
+ 3.解决方法：从http://vscojot.free.fr/dist/snort/下载libpcap的rpm包，安装，问题解决
+</code></pre><h3 id="error-c-preprocessor-lib-cpp-fails-sanity">Error ： C++ preprocessor &quot;/lib/cpp&quot; fails sanity</h3>
+<pre><code> check See `config.log&#39; for more details
+ 解决办法 ： yum install glibc-headers ; yum install gcc-c++
+</code></pre>
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
